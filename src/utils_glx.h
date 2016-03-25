@@ -160,7 +160,7 @@ struct _GLVTable {
     PFNGLGETPROGRAMIVARBPROC              gl_get_program_iv;
     PFNGLPROGRAMLOCALPARAMETER4FVARBPROC  gl_program_local_parameter_4fv;
     PFNGLACTIVETEXTUREPROC                gl_active_texture;
-    PFNGLMULTITEXCOORD2FPROC              gl_multi_tex_coord_2f;
+    PFNGLMULTITEXCOORD2FARBPROC           gl_multi_tex_coord_2f;
     PFNGLVDPAUINITNVPROC                  gl_vdpau_init;
     PFNGLVDPAUFININVPROC                  gl_vdpau_fini;
     PFNGLVDPAUREGISTERVIDEOSURFACENVPROC  gl_vdpau_register_video_surface;

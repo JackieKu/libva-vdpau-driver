@@ -752,7 +752,7 @@ gl_init_vtable(void)
             get_proc_address("glActiveTextureARB");
         if (!gl_vtable->gl_active_texture)
             return NULL;
-        gl_vtable->gl_multi_tex_coord_2f = (PFNGLMULTITEXCOORD2FPROC)
+        gl_vtable->gl_multi_tex_coord_2f = (PFNGLMULTITEXCOORD2FARBPROC)
             get_proc_address("glMultiTexCoord2fARB");
         if (!gl_vtable->gl_multi_tex_coord_2f)
             return NULL;
