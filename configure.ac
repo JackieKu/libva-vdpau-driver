@@ -23,7 +23,7 @@ AC_INIT([vdpau_video], [vdpau_video_version], [gwenole.beauchesne@intel.com],
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE
 
-AM_CONFIG_HEADER([src/config.h])
+AC_CONFIG_HEADER([src/config.h])
 
 VDPAU_VIDEO_MAJOR_VERSION=vdpau_video_major_version
 VDPAU_VIDEO_MINOR_VERSION=vdpau_video_minor_version
