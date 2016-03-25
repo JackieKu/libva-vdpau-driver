@@ -16,7 +16,9 @@ Overview
 --------
 
 libva-vdpau-driver consists in a VDPAU-based backend for VA-API.
-
+This is a forked version of the project as the original appears dead.
+This version contains a few build fixes and adds the H.264 Constrained 
+Baseline profile.
 
 Requirements
 ------------
