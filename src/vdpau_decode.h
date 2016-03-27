@@ -28,7 +28,8 @@ typedef enum {
     VDP_CODEC_MPEG2,
     VDP_CODEC_MPEG4,
     VDP_CODEC_H264,
-    VDP_CODEC_VC1
+    VDP_CODEC_VC1,
+    VDP_CODEC_HEVC
 } VdpCodec;
 
 // Translates VdpDecoderProfile to VdpCodec

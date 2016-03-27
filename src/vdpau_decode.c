@@ -62,6 +62,9 @@ VdpCodec get_VdpCodec(VdpDecoderProfile profile)
     case VDP_DECODER_PROFILE_VC1_MAIN:
     case VDP_DECODER_PROFILE_VC1_ADVANCED:
         return VDP_CODEC_VC1;
+    case VDP_DECODER_PROFILE_HEVC_MAIN:
+    case VDP_DECODER_PROFILE_HEVC_MAIN_10:
+	return VDP_CODEC_HEVC;
     }
     return 0;
 }
@@ -83,6 +86,8 @@ VdpDecoderProfile get_VdpDecoderProfile(VAProfile profile)
     case VAProfileVC1Simple:    return VDP_DECODER_PROFILE_VC1_SIMPLE;
     case VAProfileVC1Main:      return VDP_DECODER_PROFILE_VC1_MAIN;
     case VAProfileVC1Advanced:  return VDP_DECODER_PROFILE_VC1_ADVANCED;
+    case VAProfileHEVCMain:     return VDP_DECODER_PROFILE_HEVC_MAIN;
+    case VAProfileHEVCMain10:   return VDP_DECODER_PROFILE_HEVC_MAIN_10;
     default:                    break;
     }
     return (VdpDecoderProfile)-1;
@@ -1033,7 +1038,7 @@ translate_buffer(
     const translate_buffer_info_t *tbip;
     for (tbip = translate_info; tbip->func != NULL; tbip++) {
         if (tbip->codec && tbip->codec != obj_context->vdp_codec)
-            continue;
+            continue; 
         if (tbip->type != obj_buffer->type)
             continue;
         return tbip->func(driver_data, obj_context, obj_buffer);
@@ -1066,7 +1071,9 @@ vdpau_QueryConfigProfiles(
         VAProfileH264High,
         VAProfileVC1Simple,
         VAProfileVC1Main,
-        VAProfileVC1Advanced
+        VAProfileVC1Advanced,
+	VAProfileHEVCMain,
+        VAProfileHEVCMain10  
     };
 
     int i, n = 0;
