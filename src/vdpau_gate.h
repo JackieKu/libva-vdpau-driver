@@ -21,6 +21,8 @@
 #ifndef VDPAU_GATE_H
 #define VDPAU_GATE_H
 
+#include <stdarg.h>
+
 #include <vdpau/vdpau.h>
 #include <vdpau/vdpau_x11.h>
 
@@ -94,6 +96,24 @@ int vdpau_check_status(
 
 #define VDPAU_CHECK_STATUS(status, msg) \
     vdpau_check_status(driver_data, status, msg)
+inline static
+int vdpau_check_status_f(
+    vdpau_driver_data_p driver_data,
+    VdpStatus           status,
+    const char         *fmt,
+    ...
+)
+{
+    va_list ap;
+    char s[4096];
+    va_start(ap, fmt);
+    vsnprintf(s, sizeof(s), fmt, ap);
+    va_end(ap);
+    return vdpau_check_status(driver_data, status, s);
+}
+#define VDPAU_CHECK_STATUS_F(status, fmt, ...) \
+    vdpau_check_status_f(driver_data, status, fmt, __VA_ARGS__)
+
 
 // VdpGetApiVersion
 VdpStatus
