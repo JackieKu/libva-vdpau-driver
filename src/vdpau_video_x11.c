@@ -156,7 +156,8 @@ output_surface_ensure_size(
             obj_output->max_height,
             &obj_output->vdp_output_surfaces[obj_output->current_output_surface]
         );
-        if (!VDPAU_CHECK_STATUS(vdp_status, "VdpOutputSurfaceCreate()"))
+        if (!VDPAU_CHECK_STATUS_F(vdp_status, "VdpOutputSurfaceCreate(): req:%ux%u arg:%ux%u",
+            obj_output->max_width, obj_output->max_height, width, height))
             return -1;
     }
     return 0;
