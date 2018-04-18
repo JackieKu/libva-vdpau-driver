@@ -60,6 +60,7 @@
 #define VA_DRIVER_CONTEXT       VADriverContext
 #define VA_DRIVER_CONTEXT_P     VADriverContextP
 #else
+#error No! this is not supported.
 #define VA_DRIVER_VTABLE        CONCAT(VADriverVTable_,VA_INIT_SUFFIX)
 #define VA_DRIVER_VTABLE_GLX_P  CONCAT(VADriverVTableGLX_,VA_INIT_SUFFIX)
 #define VA_DRIVER_CONTEXT       CONCAT(VADriverContext_,VA_INIT_SUFFIX)
@@ -589,6 +590,7 @@ static VAStatus FUNC(Initialize)(VA_DRIVER_CONTEXT_P ctx)
     vtable->vaCreateConfig                  = vdpau_CreateConfig;
     vtable->vaDestroyConfig                 = vdpau_DestroyConfig;
     vtable->vaGetConfigAttributes           = vdpau_GetConfigAttributes;
+    vtable->vaQuerySurfaceAttributes        = vdpau_QuerySurfaceAttributes;
     vtable->vaCreateSurfaces                = vdpau_CreateSurfaces;
     vtable->vaDestroySurfaces               = vdpau_DestroySurfaces;
     vtable->vaCreateContext                 = vdpau_CreateContext;
