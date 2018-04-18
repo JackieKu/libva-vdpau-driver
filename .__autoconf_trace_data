@@ -1,0 +1,4 @@
+configure.ac:24:AM_INIT_AUTOMAKE:
+configure.ac:26:AC_CONFIG_HEADERS:src/config.h
+configure.ac:69:AC_PROG_LIBTOOL:
+configure.ac:69:LT_INIT:
