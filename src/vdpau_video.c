@@ -438,6 +438,8 @@ vdpau_CreateSurfaces(
 {
     VDPAU_DRIVER_DATA_INIT;
 
+    D(bug("%s %ux%u count:%d\n", __func__, width, height, num_surfaces));
+
     VAStatus va_status = VA_STATUS_SUCCESS;
     VdpVideoSurface vdp_surface = VDP_INVALID_HANDLE;
     VdpChromaType vdp_chroma_type = get_VdpChromaType(format);

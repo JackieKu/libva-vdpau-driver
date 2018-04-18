@@ -215,6 +215,9 @@ _output_surface_ensure_size(
 {
     unsigned int i;
 
+    D(bug("%s: output:%p %ux%u cur: %ux%u\n", __func__, obj_output,
+       width, height, obj_output->max_width, obj_output->max_height));
+
     if (!obj_output)
         return -1;
 
@@ -236,6 +239,8 @@ _output_surface_ensure_size(
                 obj_output->vdp_output_surfaces_dirty[i] = 0;
             }
         }
+    } else {
+        D(bug("surface size is OK\n"));
     }
 
     obj_output->size_changed = (
@@ -264,7 +269,8 @@ _output_surface_ensure_size(
                 &obj_output->vdp_output_surfaces[obj_output->current_output_surface],
                 obj_context
             );
-            if (!VDPAU_CHECK_STATUS(vdp_status, "VdpOutputSurfaceCreate()")) {
+            if (!VDPAU_CHECK_STATUS_F(vdp_status, "VdpOutputSurfaceCreate(): req:%ux%u arg:%ux%u",
+                obj_output->max_width, obj_output->max_height, width, height)) {
                 surface = try_reuse_output_surface(driver_data, obj_surface, obj_output, true);
                 if (surface == VDP_INVALID_HANDLE)
                     return -1;
@@ -297,6 +303,8 @@ output_surface_create(
     object_surface_p     obj_surface
 )
 {
+    D(bug("%s\n", __func__));
+
     VASurfaceID surface = object_heap_allocate(&driver_data->output_heap);
     if (surface == VA_INVALID_ID)
         return NULL;
@@ -439,8 +447,10 @@ output_surface_lookup(object_surface_p obj_surface, Drawable drawable)
     unsigned int i;
 
     if (obj_surface) {
+        D(bug("Lookup count: %u\n", obj_surface->output_surfaces_count));
         for (i = 0; i < obj_surface->output_surfaces_count; i++) {
             ASSERT(obj_surface->output_surfaces[i]);
+            D(bug("Lookup %p[%d] %p <> %p\n", obj_surface, i, obj_surface->output_surfaces[i]->drawable, drawable));
             if (obj_surface->output_surfaces[i]->drawable == drawable)
                 return obj_surface->output_surfaces[i];
         }
@@ -466,6 +476,7 @@ output_surface_ensure(
 
     /* Check for a output surface matching Drawable */
     obj_output = output_surface_lookup(obj_surface, drawable);
+    D(bug("output_surface_lookup surface: %p output:%p\n", obj_surface, obj_output));
 
     /* ... that might have been created for another video surface */
     if (!obj_output) {
@@ -473,6 +484,7 @@ output_surface_ensure(
         object_base_p obj = object_heap_first(&driver_data->output_heap, &iter);
         while (obj) {
             object_output_p m = (object_output_p)obj;
+            D(bug("HEAP object_output: %p %p <> %p\n", m, m->drawable, drawable));
             if (m->drawable == drawable) {
                 obj_output = output_surface_ref(driver_data, m);
                 new_obj_output = 1;
@@ -832,6 +844,8 @@ put_surface(
     unsigned int         flags
 )
 {
+    D(bug("put_surface surface_id:%p drawable:%p\n", surface, drawable));
+
     VAStatus va_status;
     int status;
 
@@ -868,6 +882,7 @@ put_surface(
 
     /* Resize output surface */
     output_surface_lock(obj_output);
+    D(bug("%s output_surface_ensure_size\n", __func__));
     status = output_surface_ensure_size(
         driver_data,
         obj_output,
