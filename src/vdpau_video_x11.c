@@ -313,9 +313,50 @@ output_surface_unref(
         output_surface_destroy(driver_data, obj_output);
 }
 
+static
+void recycle_output_surface(vdpau_driver_data_t *driver_data, object_output_p obj_output)
+{
+    for (int i = 0; i < VDPAU_MAX_OUTPUT_SURFACES; i++) {
+        if (obj_output->vdp_output_surfaces[i] != VDP_INVALID_HANDLE) {
+            VdpPresentationQueueStatus vdp_queue_status;
+            VdpTime vdp_dummy_time;
+            VdpStatus vdp_status;
+            vdp_status = vdpau_presentation_queue_query_surface_status(
+                driver_data,
+                obj_output->vdp_flip_queue,
+                obj_output->vdp_output_surfaces[i],
+                &vdp_queue_status,
+                &vdp_dummy_time
+            );
+            switch (vdp_queue_status) {
+                case VDP_PRESENTATION_QUEUE_STATUS_VISIBLE: {
+                    VdpTime dummy_time;
+                    vdp_status = vdpau_presentation_queue_block_until_surface_idle(
+                        driver_data,
+                        obj_output->vdp_flip_queue,
+                        obj_output->vdp_output_surfaces[i],
+                        &dummy_time
+                    );
+                    
+                }
+                case VDP_PRESENTATION_QUEUE_STATUS_IDLE: {
+                    vdpau_output_surface_destroy(
+                        driver_data,
+                        obj_output->vdp_output_surfaces[i]
+                    );
+                    obj_output->vdp_output_surfaces[i] = VDP_INVALID_HANDLE;
+                    obj_output->vdp_output_surfaces_dirty[i] = 0;
+                }
+                break;
+            }
+        }
+    }
+}
+
 // Looks up output surface
+static
 object_output_p
-output_surface_lookup(object_surface_p obj_surface, Drawable drawable)
+_output_surface_lookup(vdpau_driver_data_t *driver_data, object_surface_p obj_surface, Drawable drawable)
 {
     unsigned int i;
 
@@ -326,9 +367,18 @@ output_surface_lookup(object_surface_p obj_surface, Drawable drawable)
             D(bug("Lookup %p[%d] %p <> %p\n", obj_surface, i, obj_surface->output_surfaces[i]->drawable, drawable));
             if (obj_surface->output_surfaces[i]->drawable == drawable)
                 return obj_surface->output_surfaces[i];
+            else if (driver_data)
+                recycle_output_surface(driver_data, obj_surface->output_surfaces[i]);
         }
     }
     return NULL;
+}
+
+// Looks up output surface
+object_output_p
+output_surface_lookup(object_surface_p obj_surface, Drawable drawable)
+{
+    return _output_surface_lookup(NULL, obj_surface, drawable);
 }
 
 // Ensure an output surface is created for the specified surface and drawable
@@ -348,7 +398,7 @@ output_surface_ensure(
         return NULL;
 
     /* Check for a output surface matching Drawable */
-    obj_output = output_surface_lookup(obj_surface, drawable);
+    obj_output = _output_surface_lookup(driver_data, obj_surface, drawable);
     D(bug("output_surface_lookup surface: %p output:%p\n", obj_surface, obj_output));
 
     /* ... that might have been created for another video surface */
@@ -361,7 +411,9 @@ output_surface_ensure(
             if (m->drawable == drawable) {
                 obj_output = output_surface_ref(driver_data, m);
                 new_obj_output = 1;
-                break;
+                //break;
+            } else {
+                recycle_output_surface(driver_data, m);
             }
             obj = object_heap_next(&driver_data->output_heap, &iter);
         }
