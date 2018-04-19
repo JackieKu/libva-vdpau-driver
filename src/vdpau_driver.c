@@ -175,7 +175,8 @@ vdpau_common_Terminate(vdpau_driver_data_t *driver_data)
     vdpau_gate_exit(driver_data);
 
     if (driver_data->vdp_dpy) {
-        XCloseDisplay(driver_data->vdp_dpy);
+        if (driver_data->vdp_dpy != driver_data->x11_dpy)
+            XCloseDisplay(driver_data->vdp_dpy);
         driver_data->vdp_dpy = NULL;
     }
 }
@@ -187,8 +188,11 @@ vdpau_common_Initialize(vdpau_driver_data_t *driver_data)
     /* Create a dedicated X11 display for VDPAU purposes */
     const char * const x11_dpy_name = XDisplayString(driver_data->x11_dpy);
     driver_data->vdp_dpy = XOpenDisplay(x11_dpy_name);
-    if (!driver_data->vdp_dpy)
-        return VA_STATUS_ERROR_UNKNOWN;
+    if (!driver_data->vdp_dpy) {
+        driver_data->vdp_dpy = driver_data->x11_dpy;
+        if (!driver_data->vdp_dpy)
+            return VA_STATUS_ERROR_UNKNOWN;
+    }
 
     VdpStatus vdp_status;
     driver_data->vdp_device = VDP_INVALID_HANDLE;
