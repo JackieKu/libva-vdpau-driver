@@ -45,6 +45,7 @@ struct object_output {
     unsigned int                fields;
     unsigned int                is_window    : 1; /* drawable is a window */
     unsigned int                size_changed : 1; /* size changed since previous vaPutSurface() and user noticed the change */
+    VAContextID                 va_context;
 };
 
 // Create output surface
@@ -53,7 +54,8 @@ output_surface_create(
     vdpau_driver_data_t *driver_data,
     Drawable             drawable,
     unsigned int         width,
-    unsigned int         height
+    unsigned int         height,
+    object_surface_p     obj_surface
 ) attribute_hidden;
 
 // Destroy output surface

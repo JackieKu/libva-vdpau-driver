@@ -372,7 +372,8 @@ associate_glx_surface(
                 driver_data,
                 None,
                 obj_surface->width,
-                obj_surface->height
+                obj_surface->height,
+                obj_surface
             );
             if (!obj_glx_surface->gl_output)
                 return VA_STATUS_ERROR_ALLOCATION_FAILED;

@@ -77,6 +77,7 @@ struct object_context {
         VdpPictureInfoH264       h264;
         VdpPictureInfoVC1        vc1;
     }                            vdp_picture_info;
+    unsigned int                 vdp_output_surfaces_count;
 };
 
 typedef struct object_surface object_surface_t;
@@ -328,5 +329,35 @@ vdpau_UnlockSurface(
     VASurfaceID         surface
 ) attribute_hidden;
 #endif
+
+static inline VdpStatus
+vdpau_output_surface_create_tracked(
+    vdpau_driver_data_p  driver_data,
+    VdpDevice            device,
+    VdpRGBAFormat        rgba_format,
+    uint32_t             width,
+    uint32_t             height,
+    VdpOutputSurface    *surface,
+    object_context_p     obj_context
+)
+{
+    VdpStatus status = vdpau_output_surface_create(driver_data, device, rgba_format, width, height, surface);
+    if (obj_context && status == VDP_STATUS_OK)
+        ++obj_context->vdp_output_surfaces_count;
+    return status;
+}
+
+static inline VdpStatus
+vdpau_output_surface_destroy_tracked(
+    vdpau_driver_data_p  driver_data,
+    VdpOutputSurface     surface,
+    object_context_p     obj_context
+)
+{
+    VdpStatus status = vdpau_output_surface_destroy(driver_data, surface);
+    if (obj_context && status == VDP_STATUS_OK)
+        --obj_context->vdp_output_surfaces_count;
+    return status;
+}
 
 #endif /* VDPAU_VIDEO_H */
