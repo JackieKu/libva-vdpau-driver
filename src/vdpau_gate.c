@@ -254,6 +254,8 @@ vdpau_video_surface_put_bits_ycbcr(
                         stride);
 }
 
+static size_t surfacesAllocated;
+
 // VdpOutputSurfaceCreate
 VdpStatus
 vdpau_output_surface_create(
@@ -265,6 +267,7 @@ vdpau_output_surface_create(
     VdpOutputSurface    *surface
 )
 {
+    D(bug("%s surfacesAllocated: %zu\n", __func__, ++surfacesAllocated));
     return VDPAU_INVOKE(output_surface_create,
                         device,
                         rgba_format,
@@ -280,6 +283,7 @@ vdpau_output_surface_destroy(
     VdpOutputSurface     surface
 )
 {
+    D(bug("%s surfacesAllocated: %zu\n", __func__, --surfacesAllocated));
     return VDPAU_INVOKE(output_surface_destroy, surface);
 }
 

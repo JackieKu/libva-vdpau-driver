@@ -379,6 +379,7 @@ associate_glx_surface(
 
             /* XXX: use multiple output surfaces? */
             int status;
+            D(bug("%s output_surface_ensure_size\n", __func__));
             status = output_surface_ensure_size(
                 driver_data,
                 obj_glx_surface->gl_output,
