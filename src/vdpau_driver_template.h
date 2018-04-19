@@ -60,6 +60,7 @@
 #define VA_DRIVER_CONTEXT       VADriverContext
 #define VA_DRIVER_CONTEXT_P     VADriverContextP
 #else
+#error No! this is not supported.
 #define VA_DRIVER_VTABLE        CONCAT(VADriverVTable_,VA_INIT_SUFFIX)
 #define VA_DRIVER_VTABLE_GLX_P  CONCAT(VADriverVTableGLX_,VA_INIT_SUFFIX)
 #define VA_DRIVER_CONTEXT       CONCAT(VADriverContext_,VA_INIT_SUFFIX)
@@ -113,13 +114,6 @@ struct VA_DRIVER_VTABLE {
 		VAEntrypoint *entrypoint, 	/* out */
 		VAConfigAttrib *attrib_list,	/* out */
 		int *num_attribs		/* out */
-	);
-
-	VAStatus (*vaQuerySurfaceAttributes) (
-		VADisplay           dpy,
-		VAConfigID          config_id,
-		VASurfaceAttrib    *attrib_list,   /* out */
-		unsigned int       *num_attribs    /* out */
 	);
 
 	VAStatus (*vaCreateSurfaces) (
