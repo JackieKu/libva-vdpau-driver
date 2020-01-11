@@ -975,8 +975,8 @@ VAStatus
 vdpau_CreateSurfaceFromV4L2Buf(
     VADriverContextP    ctx,
     int                 v4l2_fd,
-    struct v4l2_format *v4l2_fmt,
-    struct v4l2_buffer *v4l2_buf,
+    /*struct v4l2_format*/void *v4l2_fmt,
+    /*struct v4l2_buffer*/void *v4l2_buf,
     VASurfaceID        *surface
 )
 {
